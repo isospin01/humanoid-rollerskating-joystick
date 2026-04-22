@@ -1,0 +1,37 @@
+[build-system]
+requires = ["uv_build>=0.8.19,<0.9.0"]
+build-backend = "uv_build"
+
+[project]
+name = "mjlab_roller"
+version = "0.1.0"
+license = "Apache-2.0"
+description = "Roller-skating RL training project for a Unitree G1 humanoid"
+readme = "README.md"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+    "mjlab",
+    "onnxruntime",
+    "pygame",
+    "pybullet",
+    "rsl-rl-lib",
+    "tensorboard",
+    "pynput"
+]
+
+[project.entry-points."mjlab.tasks"]
+mjlab_roller = "mjlab_roller.tasks"
+
+[project.scripts]
+train = "mjlab_roller.cli.train:main"
+play = "mjlab_roller.cli.play:main"
+build-amp-dataset = "mjlab_roller.cli.build_amp_dataset:main"
+validate-amp-dataset = "mjlab_roller.cli.validate_amp_dataset:main"
+
+[tool.ruff]
+src = ["src"]  # Helpful for recognizing first-party imports.
+indent-width = 4
+
+[tool.uv.sources]
+mjlab = { git = "https://github.com/mujocolab/mjlab.git", rev = "13212ad" }
+rsl-rl-lib = { path = "rsl_rl" }
