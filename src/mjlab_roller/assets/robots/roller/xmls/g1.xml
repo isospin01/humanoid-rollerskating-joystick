@@ -121,6 +121,7 @@
                   <body name="left_inline_skate" pos="0.04 0 -0.055">
                     <inertial pos="0 0 0" mass="0.9" diaginertia="0.003 0.01 0.01"/>
                     <geom name="left_skate_frame_collision" class="collision" type="box" size="0.12 0.03 0.015"/>
+                    <geom name="left_skate_frame_visual" class="visual" type="box" size="0.12 0.03 0.015" material="black"/>
                     <site name="left_skate_front_marker" pos="0.09 0 0" size="0.01"/>
                     <site name="left_skate_rear_marker" pos="-0.09 0 0" size="0.01"/>
                     <body name="left_skate_wheel_1" pos="-0.075 0 -0.03">
@@ -206,6 +207,7 @@
                   <body name="right_inline_skate" pos="0.04 0 -0.055">
                     <inertial pos="0 0 0" mass="0.9" diaginertia="0.003 0.01 0.01"/>
                     <geom name="right_skate_frame_collision" class="collision" type="box" size="0.12 0.03 0.015"/>
+                    <geom name="right_skate_frame_visual" class="visual" type="box" size="0.12 0.03 0.015" material="black"/>
                     <site name="right_skate_front_marker" pos="0.09 0 0" size="0.01"/>
                     <site name="right_skate_rear_marker" pos="-0.09 0 0" size="0.01"/>
                     <body name="right_skate_wheel_1" pos="-0.075 0 -0.03">

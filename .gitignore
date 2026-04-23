@@ -27,6 +27,7 @@ logs/
 wandb/
 outputs/
 exported/
+videos/
 *.onnx
 
 # Local convenience clones (pulled via pyproject git source, not tracked)

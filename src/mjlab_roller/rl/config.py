@@ -132,3 +132,65 @@ class RslRlAMPOnPolicyRunnerCfg(RslRlOnPolicyRunnerCfg):
   reward_schedule_anchor_iter: Optional[int] = None
   """If set, lerp warmup and LR/clip transition are measured from this absolute iteration
   (not from resume `start_iter`), so mid-run resumes do not rewind schedules."""
+
+
+# ---------------------------------------------------------------------------
+# Residual MoRE variant
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class RslRlResidualActorCriticCfg(RslRlPpoActorCriticCfg):
+  """Actor-critic cfg for the MoRE residual variant.
+
+  Extends the PPO cfg with the fields ``ResidualActorCritic`` needs:
+
+  - ``base_ckpt_path``: path to the frozen base PPO checkpoint (.pt).
+  - ``delta``: per-joint residual scale, length = num_actions (23 for G1).
+  - ``residual_hidden_dims``: residual MLP hidden sizes (small, plan default (256, 128)).
+  - ``base_actor_hidden_dims``: must match base ckpt's actor shape.
+  """
+
+  base_ckpt_path: str = "model_58999.pt"
+  delta: Tuple[float, ...] = (
+    # 12 legs @ 0.05 rad (~2.9°) — keep SKATER skate rhythm
+    0.05, 0.05, 0.05, 0.05, 0.05, 0.05,
+    0.05, 0.05, 0.05, 0.05, 0.05, 0.05,
+    # 3 waist (yaw, roll, pitch) — allow moderate torso twist
+    0.15, 0.10, 0.10,
+    # 4 left arm: sh_pitch, sh_roll, sh_yaw, elbow — human-scale swing
+    0.30, 0.30, 0.30, 0.20,
+    # 4 right arm (mirror)
+    0.30, 0.30, 0.30, 0.20,
+  )
+  residual_hidden_dims: Tuple[int, ...] = (256, 128)
+  base_actor_hidden_dims: Tuple[int, ...] = (512, 256, 128)
+  class_name: str = "ResidualActorCritic"
+
+
+@dataclass
+class RslRlResidualAmpAlgorithmCfg(RslRlPpoAlgorithmCfg):
+  """Algorithm cfg for ResidualAMPPPO: same as PPO cfg + grad_pen_coef."""
+
+  grad_pen_coef: float = 10.0
+  """WGAN-GP gradient penalty coefficient. Repo baseline used 1.0
+  (hardcoded). Residual-AMP recipe bumps to 10.0 per standard WGAN-GP
+  practice."""
+  class_name: str = "ResidualAMPPPO"
+
+
+@dataclass
+class RslRlResidualAmpRunnerCfg(RslRlAMPOnPolicyRunnerCfg):
+  """Runner cfg for the MoRE residual AMP task.
+
+  Inherits all AMP fields and layers on residual-specific ones plus an
+  upper-body-only discriminator state slice.
+  """
+
+  policy: RslRlResidualActorCriticCfg = field(default_factory=RslRlResidualActorCriticCfg)
+  algorithm: RslRlResidualAmpAlgorithmCfg = field(default_factory=RslRlResidualAmpAlgorithmCfg)
+  amp_state_slice: Optional[Tuple[int, int]] = (12, 23)
+  """Half-open (start, end) index into the 23-DoF AMP state vector; if set,
+  the discriminator sees only this slice. Default (12, 23) = waist + arms
+  (11 DoF). Set to None to disable upper-body masking."""
+  class_name: str = "SkaterResidualAMPOnPolicyRunner"

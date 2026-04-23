@@ -17,7 +17,10 @@ dependencies = [
     "pybullet",
     "rsl-rl-lib",
     "tensorboard",
-    "pynput"
+    "pynput",
+    "torch==2.11.0+cu126",
+    "torchvision==0.26.0+cu126",
+    "warp-lang<1.13",
 ]
 
 [project.entry-points."mjlab.tasks"]
@@ -33,6 +36,13 @@ validate-amp-dataset = "mjlab_roller.cli.validate_amp_dataset:main"
 src = ["src"]  # Helpful for recognizing first-party imports.
 indent-width = 4
 
+[[tool.uv.index]]
+name = "pytorch-cu126"
+url = "https://download.pytorch.org/whl/cu126"
+explicit = true
+
 [tool.uv.sources]
 mjlab = { git = "https://github.com/mujocolab/mjlab.git", rev = "13212ad" }
 rsl-rl-lib = { path = "rsl_rl" }
+torch = { index = "pytorch-cu126" }
+torchvision = { index = "pytorch-cu126" }

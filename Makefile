@@ -3,6 +3,7 @@
 
 TASK          ?= Mjlab-Roller-Joystick-Flat-Unitree-G1
 TASK_AMP      ?= Mjlab-Roller-Joystick-AMP-Flat-Unitree-G1
+TASK_RES_AMP  ?= Mjlab-Roller-Joystick-Residual-Amp-Flat-Unitree-G1
 TASK_LEGACY   ?= Mjlab-Roller-Flat-Unitree-G1
 NUM_ENVS      ?= 1
 PY            ?= uv run python
@@ -10,7 +11,7 @@ TB_LOGDIR     ?= logs/rsl_rl
 
 .DEFAULT_GOAL := help
 .PHONY: help install sync test smoke \
-        train train-amp train-legacy train-smoke \
+        train train-amp train-residual-amp train-legacy train-smoke \
         play-joystick play-sampled play-zero \
         tensorboard registry compile clean-logs
 
@@ -46,6 +47,9 @@ train: ## Full PPO training run (default joystick task)
 
 train-amp: ## AMP-augmented training run
 	$(PY) -m mjlab_roller.cli.train $(TASK_AMP)
+
+train-residual-amp: ## MoRE residual-expert AMP on top of frozen base policy
+	$(PY) -m mjlab_roller.cli.train $(TASK_RES_AMP)
 
 train-legacy: ## Legacy cycle-based baseline
 	$(PY) -m mjlab_roller.cli.train $(TASK_LEGACY)

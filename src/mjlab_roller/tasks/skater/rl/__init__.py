@@ -1,1 +1,4 @@
-from mjlab_roller.tasks.skater.rl.amp_runner import SkaterAMPOnPolicyRunner as SkaterAMPOnPolicyRunner
+from mjlab_roller.tasks.skater.rl.amp_runner import (
+    SkaterAMPOnPolicyRunner as SkaterAMPOnPolicyRunner,
+    SkaterResidualAMPOnPolicyRunner as SkaterResidualAMPOnPolicyRunner,
+)

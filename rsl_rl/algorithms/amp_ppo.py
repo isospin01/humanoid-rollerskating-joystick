@@ -48,6 +48,10 @@ class AMP_PPO:
         desired_kl=0.01,
         device="cpu",
         normalize_advantage_per_mini_batch=False,
+        # AMP discriminator gradient penalty coefficient (λ_gp in WGAN-GP).
+        # Repo default was 1.0 (lambda_ hardcoded at call site); residual-AMP
+        # recipe bumps to 10.0.
+        grad_pen_coef: float = 1.0,
         # RND parameters
         rnd_cfg: dict | None = None,
         # Symmetry parameters
@@ -148,6 +152,7 @@ class AMP_PPO:
         self.schedule = schedule
         self.learning_rate = learning_rate
         self.normalize_advantage_per_mini_batch = normalize_advantage_per_mini_batch
+        self.grad_pen_coef = grad_pen_coef
 
 
     def init_storage(self, training_type, num_envs, num_transitions_per_env, obs, actions_shape):
@@ -440,8 +445,8 @@ class AMP_PPO:
                 policy_loss = torch.nn.MSELoss()(policy_d, -1 * torch.ones(policy_d.size(), device=self.device))
                 amp_loss = 0.5 * (expert_loss + policy_loss)
 
-                # grad penalty
-                grad_pen_loss = self.discriminator.compute_grad_pen(expert_states, lambda_=1)
+                # grad penalty (λ_gp configurable via cfg; repo default = 1.0)
+                grad_pen_loss = self.discriminator.compute_grad_pen(expert_states, lambda_=self.grad_pen_coef)
             else:
                 amp_loss = torch.tensor(0.0, device=self.device)
                 grad_pen_loss = torch.tensor(0.0, device=self.device)
