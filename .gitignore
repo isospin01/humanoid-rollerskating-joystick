@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+build/
+dist/
+
+# Virtualenvs / package manager
+.venv/
+venv/
+env/
+
+# Editors / IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Training outputs
+logs/
+wandb/
+outputs/
+exported/
+*.onnx
+
+# Local convenience clones (pulled via pyproject git source, not tracked)
+mjlab/
+
+# Local env files
+.env
+.env.local
